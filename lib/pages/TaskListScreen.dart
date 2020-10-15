@@ -13,6 +13,8 @@ class TaskListScreen extends StatefulWidget {
 
 class _TaskListScreen extends State<TaskListScreen> {
   List<Task> tasks = List<Task>();
+  Task taskCreated;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,32 +29,98 @@ class _TaskListScreen extends State<TaskListScreen> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.add, color: Colors.white),
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => TaskScreen()));
-            }
-          ),
+              icon: Icon(Icons.add, color: Colors.white),
+              onPressed: () {
+                addTask(context);
+              }),
         ],
       ),
       backgroundColor: CupertinoColors.black,
-      body: ListView.builder(
-        itemCount: tasks.length,
-        itemBuilder: (context, index) {
-          return CheckboxListTile(
-            title: Text(
-              tasks[index].title,
-              style: TextStyle(color: Colors.white, fontSize: 30),
+      body: tasks.length > 0
+          ? ListView.builder(
+              itemCount: tasks.length,
+              itemBuilder: (context, index) {
+                return Theme(
+                  data: ThemeData(unselectedWidgetColor: Colors.white),
+                  child: CheckboxListTile(
+                    title: Text(
+                      tasks[index].title,
+                      style: TextStyle(color: Colors.white, fontSize: 25),
+                    ),
+                    value: tasks[index].isPressed,
+                    onChanged: (bool value) {
+                      setState(() {
+                        clickTask(index, value);
+                      });
+                    },
+                    activeColor: Colors.white,
+                    checkColor: Colors.black,
+                    controlAffinity: ListTileControlAffinity.leading,
+                  ),
+                );
+              },
+            )
+          : Center(
+              child: Container(
+                child: Text(
+                  'no items',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
             ),
-            value: false,
-          );
-        },
-      ),
     );
   }
 
-  addTask(Task task){
-    setState(() {
-      tasks.add(task);
-    });
+  addTask(BuildContext context) async {
+    final result = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => TaskScreen()));
+
+    if (result != null) {
+      setState(() {
+        tasks.add(result);
+      });
+    }
+  }
+
+  Future<void> clickTask(int index, bool value) async {
+    showCupertinoModalPopup(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoActionSheet(
+            title: Text('Opcions'),
+            actions: [
+              CupertinoActionSheetAction(
+                child: (tasks[index].isPressed)
+                    ? Text('Desmarca la tasca')
+                    : Text('Marca la tasca'),
+                isDefaultAction: true,
+                onPressed: () {
+                  setState(() {
+                    tasks[index].isPressed = value;
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              CupertinoActionSheetAction(
+                child: Text('Elimina la tasca'),
+                isDestructiveAction: true,
+                onPressed: () {
+                  setState(() {
+                    tasks.removeAt(index);
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+            cancelButton: CupertinoActionSheetAction(
+              isDefaultAction: true,
+              child: Text('Cancelar'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          );
+        }
+    );
   }
 }

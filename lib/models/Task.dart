@@ -3,5 +3,4 @@ class Task {
   bool isPressed;
 
   Task(this.title, this.isPressed);
-
 }
