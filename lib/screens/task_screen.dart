@@ -1,6 +1,7 @@
-import 'package:amv_ddm2_s3/models/Task.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../task.dart';
 
 class TaskScreen extends StatefulWidget {
   TaskScreen({Key key}) : super(key: key);
@@ -37,6 +38,7 @@ class _TaskScreen extends State<TaskScreen> {
             Container(
               padding: EdgeInsets.all(12),
               child: CupertinoTextField(
+                maxLength: 20,
                 controller: _controller,
                 placeholder: 'Escriu una tasca...',
                 style: TextStyle(
@@ -65,7 +67,7 @@ class _TaskScreen extends State<TaskScreen> {
                             if (_controller.text.isEmpty) {
                               return;
                             }
-                            Navigator.pop(context, new Task(_controller.text, false));
+                            Navigator.pop(context, new Task(title: _controller.text, isPressed: false));
                           },
                           child: Text('Crear tasca'),
                         )
