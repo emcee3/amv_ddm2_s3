@@ -29,7 +29,11 @@ class _TaskListScreen extends State<TaskListScreen> {
     tasksBox = Hive.box('tasks');
     if (tasksBox.isNotEmpty) {
       for (var i = 0; i < tasksBox.length; i++) {
-        tasks.add(tasksBox.getAt(i) as Task);
+        Task t = new Task(
+            title: (tasksBox.getAt(i) as Task).title,
+            isPressed: (tasksBox.getAt(i) as Task).isPressed
+        );
+        tasks.add(t);
       }
     }
   }
@@ -152,6 +156,7 @@ class _TaskListScreen extends State<TaskListScreen> {
                 onPressed: () {
                   setState(() {
                     tasks[index].isPressed = value;
+                    tasksBox.put(tasks[index].title, tasks[index]);
                   });
                   Navigator.pop(context);
                 },

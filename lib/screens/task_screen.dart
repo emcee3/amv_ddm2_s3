@@ -65,6 +65,21 @@ class _TaskScreen extends State<TaskScreen> {
                           color: Colors.orange,
                           onPressed: () {
                             if (_controller.text.isEmpty) {
+                              showDialog(
+                                  context: context,
+                                  child: CupertinoAlertDialog(
+                                    title: Text('Alerta!'),
+                                    content: Text('No es pot crear una tasca sense text'),
+                                    actions: [
+                                      CupertinoDialogAction(
+                                        child: Text("D'acord"),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      )
+                                    ],
+                                  )
+                              );
                               return;
                             }
                             Navigator.pop(context, new Task(title: _controller.text, isPressed: false));
